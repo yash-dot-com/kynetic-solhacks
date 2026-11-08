@@ -1,0 +1,10 @@
+
+> nextjs-anchor@0.0.0 setup
+> npm run anchor-build && npm run codama:js
+
+
+> nextjs-anchor@0.0.0 anchor-build
+> cd anchor && anchor build --ignore-keys
+
+
+sh: anchor: command not found

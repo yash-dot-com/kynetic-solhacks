@@ -1,0 +1,8 @@
+node_modules
+.next
+.env*
+anchor
+media
+out
+.context
+error.log
