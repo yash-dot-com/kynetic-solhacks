@@ -4,7 +4,14 @@
 resolution = true
 skip-lint = false
 
+[programs.testnet]
+kynetic_bounty = "E75cjuzKUcP79xMRTzWG2EoPRXiRyzkGpo9BBoG7uJ5r"
+
+[programs.localnet]
+kynetic_bounty = "E75cjuzKUcP79xMRTzWG2EoPRXiRyzkGpo9BBoG7uJ5r"
+
 [programs.devnet]
+kynetic_bounty = "E75cjuzKUcP79xMRTzWG2EoPRXiRyzkGpo9BBoG7uJ5r"
 vault = "F4jZpgbtTb6RWNWq6v35fUeiAsRJMrDczVPv9U23yXjB"
 
 [provider]

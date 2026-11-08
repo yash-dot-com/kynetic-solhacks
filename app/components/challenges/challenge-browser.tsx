@@ -1,232 +1,206 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { Check, Layers3, Search, SlidersHorizontal, X } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import useSWR from "swr";
+import { fetchFundedBounties } from "@/app/lib/bounty/client";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { challenges } from "@/app/lib/challenges/data";
-import { ChallengeIcon } from "./challenge-icon";
-
-const categories = [
-  "All",
-  "Perception",
-  "Manipulation",
-  "Navigation",
-  "Simulation",
-  "Real World",
-];
+  ArrowDownWideNarrow,
+  ArrowUpRight,
+  Check,
+  Columns3,
+  FileText,
+  Search,
+  Users,
+  X,
+} from "lucide-react";
+import { bounties, bountyCategories } from "@/app/lib/challenges/bounties";
+import { HostBountyButton } from "../host-bounty-button";
 
 export function ChallengeBrowser() {
-  const [query, setQuery] = useState("");
-  const [category, setCategory] = useState("All");
-  const [active, setActive] = useState(false);
-  const [ending, setEnding] = useState(false);
-  const search = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    const handleKey = (event: KeyboardEvent) => {
-      const target = event.target as HTMLElement;
-      if (
-        event.key === "/" &&
-        !target.closest("input, textarea, [contenteditable]")
-      ) {
-        event.preventDefault();
-        search.current?.focus();
-      }
-    };
-    document.addEventListener("keydown", handleKey);
-    return () => document.removeEventListener("keydown", handleKey);
-  }, []);
-
-  const visible = challenges.filter((challenge) => {
-    const matchesText =
-      `${challenge.title} ${challenge.description} ${challenge.task} ${challenge.host}`
-        .toLowerCase()
-        .includes(query.trim().toLowerCase());
-    const matchesCategory =
-      category === "All" ||
-      challenge.task === category ||
-      challenge.environment === category ||
-      (category === "Simulation" && challenge.environment === "Sim + Real");
-    return (
-      matchesText &&
-      matchesCategory &&
-      (!active || challenge.status === "Active") &&
-      (!ending ||
-        (challenge.status === "Active" && challenge.deadline <= "2026-11-12"))
-    );
+  const {
+    data: funded = [],
+    error: fundedError,
+    isLoading: loadingFunded,
+  } = useSWR("kynetic:devnet:bounties", fetchFundedBounties, {
+    refreshInterval: 30000,
+    shouldRetryOnError: false,
   });
-
-  function reset() {
-    setQuery("");
-    setCategory("All");
-    setActive(false);
-    setEnding(false);
-  }
-
+  const [query, setQuery] = useState("");
+  const [sort, setSort] = useState("recent");
+  const visible = [...funded, ...bounties].filter((bounty) =>
+    `${bounty.title} ${bounty.description} ${bounty.host} ${bounty.category} ${bounty.model}`
+      .toLowerCase()
+      .includes(query.toLowerCase().trim())
+  );
+  const sorted = [...visible].sort((a, b) =>
+    sort === "reward"
+      ? b.pool - a.pool
+      : sort === "deadline"
+        ? a.deadline.localeCompare(b.deadline)
+        : 0
+  );
   return (
-    <main>
-      <section className="market-container explore-hero">
-        <Badge variant="outline" className="network-pill">
-          <Layers3 />
-          Challenge marketplace
-        </Badge>
-        <h1 className="text-display font-semibold tracking-tight">
-          Explore challenges
-        </h1>
-        <p>
-          Browse robotics problems, contribute targeted datasets,
-          <br className="hidden sm:block" /> and earn rewards for measured
-          improvement.
-        </p>
-        <div className="challenge-search">
-          <Search aria-hidden="true" />
-          <Input
-            ref={search}
-            aria-label="Search challenges"
-            placeholder="Search challenges by name, task, or keyword…"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-          />
-          <kbd aria-hidden="true">/</kbd>
-          <Button
-            size="icon-sm"
-            variant="default"
-            onClick={() => search.current?.focus()}
-            aria-label="Focus challenge search"
-          >
-            <Search />
-          </Button>
+    <section
+      className="n-bounty-section"
+      id="bounties"
+      aria-labelledby="bounty-board-title"
+    >
+      <div className="n-section-heading">
+        <div>
+          <p className="n-eyebrow">The marketplace</p>
+          <h2 id="bounty-board-title">Find a model you can make better.</h2>
+          <p className="n-description">
+            Choose a challenge. Curate targeted data. Get rewarded for the
+            improvement.
+          </p>
         </div>
-        <div className="challenge-filters">
-          <ToggleGroup
-            aria-label="Challenge category"
-            value={[category]}
-            onValueChange={(values) => setCategory(values[0] ?? "All")}
-            className="market-filter-group"
-          >
-            {categories.map((item) => (
-              <ToggleGroupItem
-                key={item}
-                value={item}
-                className="market-filter"
+        <HostBountyButton />
+      </div>
+      <div className="n-board-toolbar">
+        <span className="n-view-label">
+          <Columns3 size={16} /> Board{" "}
+          <span className="n-count" aria-live="polite">
+            {visible.length}
+          </span>
+        </span>
+        <div className="n-board-controls">
+          <label className="n-search">
+            <Search size={15} aria-hidden="true" />
+            <input
+              aria-label="Search bounties"
+              placeholder="Search bounties…"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+            />
+            {query && (
+              <button
+                type="button"
+                aria-label="Clear search"
+                onClick={() => setQuery("")}
               >
-                {item}
-              </ToggleGroupItem>
-            ))}
-          </ToggleGroup>
-          <span className="filter-divider" />
-          <div className="flex gap-2">
-            <Button
-              size="sm"
-              variant={active ? "default" : "outline"}
-              aria-pressed={active}
-              onClick={() => setActive(!active)}
+                <X size={14} />
+              </button>
+            )}
+          </label>
+          <label className="n-sort">
+            <ArrowDownWideNarrow size={15} aria-hidden="true" />
+            <select
+              aria-label="Sort bounties"
+              value={sort}
+              onChange={(event) => setSort(event.target.value)}
             >
-              Active
-            </Button>
-            <Button
-              size="sm"
-              variant={ending ? "default" : "outline"}
-              aria-pressed={ending}
-              onClick={() => setEnding(!ending)}
+              <option value="recent">Default order</option>
+              <option value="reward">Highest reward</option>
+              <option value="deadline">Closing soon</option>
+            </select>
+          </label>
+        </div>
+      </div>
+      <div className="n-board" aria-label="Bounties grouped by model category">
+        {bountyCategories.map((category) => {
+          const entries = sorted.filter(
+            (bounty) => bounty.category === category
+          );
+          return (
+            <section
+              className="n-board-column"
+              key={category}
+              aria-label={`${category} bounties`}
             >
-              Ending soon
-            </Button>
-          </div>
-        </div>
-      </section>
-      <section
-        className="market-container challenge-results"
-        aria-label="Challenge results"
-      >
-        <div className="results-caption">
-          <span aria-live="polite">
-            {visible.length} {visible.length === 1 ? "challenge" : "challenges"}
-          </span>
-          <span>
-            <Check />
-            Entry stakes returned at settlement
-          </span>
-        </div>
-        {visible.length > 0 && (
-          <div className="challenge-table">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Challenge</TableHead>
-                  <TableHead>Task</TableHead>
-                  <TableHead>Environment</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Reward pool</TableHead>
-                  <TableHead>Refundable stake</TableHead>
-                  <TableHead>Deadline</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {visible.map((challenge) => (
-                  <TableRow key={challenge.slug}>
-                    <TableCell className="challenge-table-name">
-                      <div className="challenge-table-identity">
-                        <ChallengeIcon type={challenge.icon} />
-                        <div>
-                          <Link
-                            href={`/challenges/${challenge.slug}`}
-                            className="challenge-table-link"
-                          >
-                            {challenge.title}
-                          </Link>
-                          <p>{challenge.description}</p>
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>{challenge.task}</TableCell>
-                    <TableCell>{challenge.environment}</TableCell>
-                    <TableCell>
-                      <Badge
-                        variant="outline"
-                        className={`challenge-status ${challenge.status === "Review" ? "status-review" : "status-active"}`}
-                      >
-                        <span />
-                        {challenge.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="font-medium">
-                      {challenge.pool.toFixed(1)} SOL
-                    </TableCell>
-                    <TableCell>{challenge.stake.toFixed(2)} SOL</TableCell>
-                    <TableCell>{challenge.deadlineLabel}</TableCell>
-                  </TableRow>
+              <div className="n-column-heading">
+                <h3>
+                  <span className="n-category-dot" />
+                  {category}
+                </h3>
+                <span className="n-count">{entries.length}</span>
+              </div>
+              <div className="n-card-stack">
+                {entries.map((bounty) => (
+                  <Link
+                    href={`/challenges/${bounty.id.startsWith("KY-") ? bounty.id.toLowerCase() : bounty.id}`}
+                    className="n-bounty-card"
+                    key={bounty.id}
+                    aria-label={`View ${bounty.title}`}
+                  >
+                    <span className="n-card-top">
+                      <span className="n-host">
+                        <span className="n-avatar">{bounty.initials}</span>
+                        {bounty.host}
+                      </span>
+                      <ArrowUpRight size={14} aria-hidden="true" />
+                    </span>
+                    <span className="n-card-title">{bounty.title}</span>
+                    <span className="n-card-description">
+                      {bounty.description}
+                    </span>
+                    {!bounty.id.startsWith("KY-") && (
+                      <span className="n-status-tag">Devnet escrow funded</span>
+                    )}
+                    <span className="n-model">
+                      <FileText size={13} aria-hidden="true" />
+                      {bounty.model}
+                    </span>
+                    <span className="n-card-properties">
+                      <span>
+                        <span className="n-property-label">Reward pool</span>
+                        <strong>{bounty.pool} SOL</strong>
+                      </span>
+                      <span>
+                        <span className="n-property-label">Entry stake</span>
+                        <span>{bounty.stake.toFixed(2)} SOL</span>
+                      </span>
+                    </span>
+                    <span className="n-card-bottom">
+                      <span>
+                        <Users size={13} aria-hidden="true" />{" "}
+                        {bounty.contributors} curators
+                      </span>
+                      <span>Closes {bounty.deadline}</span>
+                    </span>
+                  </Link>
                 ))}
-              </TableBody>
-            </Table>
-          </div>
-        )}
-        {visible.length === 0 && (
-          <div className="challenge-empty">
-            <SlidersHorizontal />
-            <h2 className="text-heading font-semibold">
-              No matching challenges
-            </h2>
-            <p>Try another keyword or a different set of filters.</p>
-            <Button variant="outline" onClick={reset}>
-              <X />
-              Clear filters
-            </Button>
-          </div>
-        )}
-      </section>
-    </main>
+              </div>
+              {entries.length === 0 && (
+                <p className="n-column-empty">No matching bounties.</p>
+              )}
+            </section>
+          );
+        })}
+      </div>
+      {visible.length === 0 && (
+        <div className="n-empty">
+          <p>No bounties match “{query}”.</p>
+          <button
+            type="button"
+            className="n-button"
+            onClick={() => setQuery("")}
+          >
+            Clear search
+          </button>
+        </div>
+      )}
+      {fundedError && (
+        <p className="n-board-note" role="status">
+          Live Devnet bounties could not load.{" "}
+          <button
+            type="button"
+            className="n-text-link"
+            onClick={() => window.location.reload()}
+          >
+            Reload
+          </button>
+        </p>
+      )}
+      {loadingFunded && (
+        <p className="n-board-note" role="status">
+          Loading funded Devnet bounties…
+        </p>
+      )}
+      <div className="n-board-note">
+        <Check size={14} aria-hidden="true" /> Entry stakes are returned at
+        settlement. Rewards follow measured gains.
+      </div>
+    </section>
   );
 }

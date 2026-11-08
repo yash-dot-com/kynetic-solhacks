@@ -5,6 +5,7 @@ import {
   useContext,
   useState,
   useCallback,
+  useEffect,
   type ReactNode,
 } from "react";
 import type { ClusterMoniker } from "../lib/solana-client";
@@ -22,7 +23,12 @@ const ClusterContext = createContext<ClusterContextValue | null>(null);
 const STORAGE_KEY = "solana-cluster";
 function getInitialCluster(): ClusterMoniker {
   if (typeof window === "undefined") return "devnet";
-  const stored = localStorage.getItem(STORAGE_KEY);
+  let stored: string | null = null;
+  try {
+    stored = localStorage.getItem(STORAGE_KEY);
+  } catch {
+    /* Use devnet without browser storage. */
+  }
   if (stored && CLUSTERS.includes(stored as ClusterMoniker)) {
     return stored as ClusterMoniker;
   }
@@ -32,12 +38,22 @@ function getInitialCluster(): ClusterMoniker {
 export { CLUSTERS };
 
 export function ClusterProvider({ children }: { children: ReactNode }) {
-  const [cluster, setClusterState] =
-    useState<ClusterMoniker>(getInitialCluster);
+  const [cluster, setClusterState] = useState<ClusterMoniker>("devnet");
+
+  useEffect(() => {
+    const frame = requestAnimationFrame(() =>
+      setClusterState(getInitialCluster())
+    );
+    return () => cancelAnimationFrame(frame);
+  }, []);
 
   const setCluster = useCallback((c: ClusterMoniker) => {
     setClusterState(c);
-    localStorage.setItem(STORAGE_KEY, c);
+    try {
+      localStorage.setItem(STORAGE_KEY, c);
+    } catch {
+      /* Network selection still works in memory. */
+    }
   }, []);
 
   const explorerUrl = useCallback(

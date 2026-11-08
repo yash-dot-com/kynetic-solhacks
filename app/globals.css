@@ -2028,8 +2028,16 @@ textarea:focus-visible {
   height: 4.5rem;
   content: "";
   background:
-    repeating-linear-gradient(132deg, color-mix(in srgb, var(--primary) 6%, transparent) 0 22px, transparent 22px 44px),
-    linear-gradient(100deg, color-mix(in srgb, var(--primary) 6%, transparent), color-mix(in srgb, var(--primary) 13%, transparent));
+    repeating-linear-gradient(
+      132deg,
+      color-mix(in srgb, var(--primary) 6%, transparent) 0 22px,
+      transparent 22px 44px
+    ),
+    linear-gradient(
+      100deg,
+      color-mix(in srgb, var(--primary) 6%, transparent),
+      color-mix(in srgb, var(--primary) 13%, transparent)
+    );
 }
 .landing-feature-icon {
   display: grid;
@@ -2064,9 +2072,19 @@ textarea:focus-visible {
   border: 1px solid color-mix(in srgb, var(--primary) 24%, var(--border));
   border-radius: 1.125rem;
   background:
-    radial-gradient(ellipse at 52% 2%, color-mix(in srgb, var(--primary) 18%, transparent), transparent 66%),
-    linear-gradient(145deg, color-mix(in srgb, var(--surface-alt) 86%, transparent), var(--card));
-  box-shadow: var(--panel-shadow), 0 28px 80px -54px color-mix(in srgb, var(--primary) 50%, transparent);
+    radial-gradient(
+      ellipse at 52% 2%,
+      color-mix(in srgb, var(--primary) 18%, transparent),
+      transparent 66%
+    ),
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--surface-alt) 86%, transparent),
+      var(--card)
+    );
+  box-shadow:
+    var(--panel-shadow),
+    0 28px 80px -54px color-mix(in srgb, var(--primary) 50%, transparent);
 }
 .landing-hero-art::after {
   position: absolute;
@@ -2078,7 +2096,9 @@ textarea:focus-visible {
   border: 1px solid color-mix(in srgb, var(--primary) 15%, transparent);
   border-radius: 50%;
   content: "";
-  box-shadow: 0 0 0 28px color-mix(in srgb, var(--primary) 3%, transparent), 0 0 0 56px color-mix(in srgb, var(--primary) 2%, transparent);
+  box-shadow:
+    0 0 0 28px color-mix(in srgb, var(--primary) 3%, transparent),
+    0 0 0 56px color-mix(in srgb, var(--primary) 2%, transparent);
   pointer-events: none;
 }
 .landing-art-topline,
@@ -2308,15 +2328,31 @@ textarea:focus-visible {
   border-radius: 0.25rem 0.25rem 0 0;
   background: color-mix(in srgb, var(--muted-foreground) 40%, transparent);
 }
-.landing-compare-volume i:nth-child(3n + 1) { height: 68%; }
-.landing-compare-volume i:nth-child(3n + 2) { height: 90%; }
-.landing-compare-volume i:nth-child(3n) { height: 77%; }
-.landing-compare-outcome i { height: 22%; background: color-mix(in srgb, var(--primary) 52%, transparent); }
+.landing-compare-volume i:nth-child(3n + 1) {
+  height: 68%;
+}
+.landing-compare-volume i:nth-child(3n + 2) {
+  height: 90%;
+}
+.landing-compare-volume i:nth-child(3n) {
+  height: 77%;
+}
+.landing-compare-outcome i {
+  height: 22%;
+  background: color-mix(in srgb, var(--primary) 52%, transparent);
+}
 .landing-compare-outcome i:nth-child(4),
-.landing-compare-outcome i:nth-child(5) { height: 44%; }
-.landing-compare-outcome i:nth-child(6) { height: 58%; }
+.landing-compare-outcome i:nth-child(5) {
+  height: 44%;
+}
+.landing-compare-outcome i:nth-child(6) {
+  height: 58%;
+}
 .landing-compare-outcome i:nth-child(7),
-.landing-compare-outcome i:nth-child(8) { height: 82%; background: var(--primary); }
+.landing-compare-outcome i:nth-child(8) {
+  height: 82%;
+  background: var(--primary);
+}
 .landing-compare-card p {
   max-width: 35rem;
   color: var(--muted-foreground);
@@ -2941,5 +2977,218 @@ textarea:focus-visible {
   }
   .home-footer > div {
     width: 100%;
+  }
+}
+
+/* Wallet Standard controls, shared by the landing page and challenge app. */
+.wallet-control {
+  position: relative;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #273047;
+}
+.wallet-control button,
+.wallet-control select {
+  font: inherit;
+}
+.wallet-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 46px;
+  padding: 10px 16px;
+  border: 1px solid #dcdbea;
+  border-radius: 99px;
+  background: #fff;
+  color: #38364e;
+  font-weight: 550;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.wallet-trigger:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.wallet-panel {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  z-index: 60;
+  width: 360px;
+  max-width: calc(100vw - 32px);
+  padding: 22px;
+  border: 1px solid #e5e3ef;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 16px 50px #23244020;
+  outline: none;
+}
+.wallet-panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+.wallet-panel-heading button {
+  display: grid;
+  place-items: center;
+  background: transparent;
+  border: 0;
+  padding: 8px;
+  color: #677286;
+  cursor: pointer;
+}
+.wallet-network {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  color: #677286;
+}
+.wallet-network select {
+  color: #38364e;
+  border: 1px solid #deddea;
+  border-radius: 8px;
+  background: #f8f8fc;
+  padding: 9px 12px;
+  text-transform: capitalize;
+  max-width: 165px;
+}
+.wallet-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.wallet-options button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  width: 100%;
+  padding: 13px;
+  border: 1px solid #e5e3ef;
+  border-radius: 10px;
+  background: #f9f9fd;
+  color: #38364e;
+  cursor: pointer;
+}
+.wallet-options button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+.wallet-options button > svg:last-child {
+  margin-left: auto;
+}
+.wallet-empty p + p {
+  margin-top: 10px;
+}
+.wallet-empty > div {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 18px;
+}
+.wallet-empty a,
+.wallet-account-actions a,
+.wallet-account-actions button {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  color: #634ab0;
+}
+.wallet-note {
+  margin-top: 20px !important;
+  color: #677286;
+}
+.wallet-panel p {
+  font-size: 1rem;
+  line-height: 1.6;
+}
+.wallet-error {
+  color: #a43b51 !important;
+  margin-top: 15px !important;
+}
+.wallet-error p {
+  color: inherit !important;
+}
+.wallet-error button {
+  border: 0;
+  background: transparent;
+  text-decoration: underline;
+  color: inherit;
+  padding: 8px 0;
+  cursor: pointer;
+}
+.wallet-balance {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 17px;
+}
+.wallet-balance > span {
+  color: #677286;
+}
+.wallet-balance > strong {
+  font-size: 1.5rem;
+  font-variant-numeric: tabular-nums;
+}
+.wallet-address {
+  overflow-wrap: anywhere;
+  padding: 13px;
+  background: #f5f5fb;
+  border: 1px solid #e5e3ef;
+  border-radius: 9px;
+  margin: 0 !important;
+  color: #38445d !important;
+  user-select: all;
+}
+.wallet-account-actions {
+  display: flex;
+  gap: 18px;
+  justify-content: space-between;
+  margin-top: 18px;
+}
+.wallet-account-actions button {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.wallet-disconnect {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  width: 100%;
+  padding: 11px;
+  border: 1px solid #eadce1;
+  border-radius: 9px;
+  margin-top: 22px;
+  background: #fff8fa;
+  color: #9a3f56;
+  cursor: pointer;
+}
+.wallet-control button:focus-visible,
+.wallet-control select:focus-visible,
+.wallet-control a:focus-visible {
+  outline: 3px solid #7953dc;
+  outline-offset: 4px;
+}
+@media (max-width: 700px) {
+  .wallet-panel {
+    position: fixed;
+    top: 84px;
+    right: 16px;
+    max-height: calc(100dvh - 105px);
+    overflow: auto;
+  }
+  .wallet-trigger {
+    padding: 9px 12px;
+  }
+  .wallet-trigger > svg {
+    display: none;
   }
 }

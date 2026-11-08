@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
+import "./workspace.css";
 import { Providers } from "./components/providers";
 
 const inter = Inter({
@@ -15,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Kynetic — AI model and robotics challenges",
+  title: "Kynetic — Better models start with better data",
   description:
     "Improve AI models and robotics with targeted datasets, host-provided cloud evaluation, and SOL rewards for measured improvements.",
   icons: {
